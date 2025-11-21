@@ -8,6 +8,7 @@ __pycache__/
 dist/
 build/
 *.egg
+src/__pycache__/
 
 # Virtual Environment
 .venv/
@@ -15,12 +16,15 @@ venv/
 ENV/
 env/
 
-# PyTorch Models (large files - optional, comment out if you want to upload models)
-*.pt
-*.pth
+# PyTorch Models (large files)
+outputs/models/*.pt
+outputs/models/*.pth
 
-# Datasets (large files)
-*.csv
+# Raw datasets (large files)
+data/raw/*.csv
+
+# Logs
+outputs/logs/*.log
 
 # IDE
 .vscode/
@@ -32,16 +36,6 @@ env/
 
 # Jupyter Notebooks checkpoints
 .ipynb_checkpoints/
-
-# Training outputs and logs
-training_output.log
-*.log
-
-# Pickle files (can be regenerated)
-*.pkl
-
-# Numpy arrays (predictions, can be large)
-*.npy
 
 # Temporary files
 *.tmp
