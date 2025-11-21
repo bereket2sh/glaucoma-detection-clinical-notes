@@ -1,0 +1,267 @@
+% CSCE566 - Data Mining Final Project Report Template
+% Glaucoma Detection from Clinical Notes
+
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Glaucoma Detection from Clinical Notes: A Fairness-Aware Deep Learning Approach}
+
+\author{\IEEEauthorblockN{Your Name}
+\IEEEauthorblockA{\textit{Department of Computer Science} \\
+\textit{University of Louisiana at Lafayette}\\
+Lafayette, Louisiana \\
+your.email@louisiana.edu}}
+
+\maketitle
+
+% NO ABSTRACT NEEDED per instructions
+
+\section{Introduction}
+
+Glaucoma is a leading cause of irreversible blindness worldwide, affecting millions of people [cite]. Early detection through analysis of clinical notes can significantly improve patient outcomes. However, traditional manual review of clinical documentation is time-consuming and may miss subtle patterns indicative of disease.
+
+\textbf{Motivation:} This project leverages deep learning to automatically detect glaucoma from clinical text notes, addressing two key challenges: (1) extracting meaningful patterns from unstructured medical text, and (2) ensuring fairness across different racial groups, as glaucoma prevalence varies significantly by race [cite].
+
+\textbf{Problem Statement:} Given a clinical note, predict whether the patient has glaucoma (binary classification), while ensuring equitable performance across Asian, Black, and White patient populations.
+
+\textbf{Contributions:} We implement and compare three neural architectures (LSTM, GRU, Transformer) on the FairCLIP dataset, with comprehensive fairness evaluation across racial subgroups.
+
+\section{Related Work}
+
+\textbf{Medical Text Classification:} Prior work has applied RNNs [cite] and transformers [cite] to medical text analysis. BioBERT [cite] and ClinicalBERT [cite] have shown strong performance on clinical NLP tasks through pre-training on medical corpora.
+
+\textbf{Glaucoma Detection:} Most glaucoma detection systems focus on imaging data [cite], while text-based approaches remain underexplored. Clinical notes contain rich diagnostic information that complements imaging.
+
+\textbf{Fairness in Healthcare ML:} Recent studies highlight disparities in ML model performance across demographic groups [cite]. The FairCLIP dataset [cite] specifically addresses fairness evaluation in clinical settings.
+
+Our work differs by: (1) comparing multiple architectures on clinical text, (2) explicit fairness evaluation by race, and (3) detailed analysis of performance disparities.
+
+\section{Method}
+
+\subsection{Data Preprocessing}
+
+\textbf{Dataset:} FairCLIP contains 10,000 clinical notes with glaucoma labels and demographic information. Split: 7,000 training / 1,000 validation / 2,000 test.
+
+\textbf{Text Cleaning:}
+\begin{itemize}
+    \item Lowercase normalization
+    \item Medical abbreviation expansion (OU→both eyes, IOP→intraocular pressure)
+    \item Special character removal
+    \item Tokenization with vocabulary size 9,980 (minimum frequency=2)
+    \item Sequence padding to 512 tokens
+\end{itemize}
+
+\subsection{Model Architectures}
+
+\textbf{1. LSTM (Long Short-Term Memory):}
+\begin{itemize}
+    \item Bidirectional, 2-layer LSTM
+    \item Embedding dimension: 128
+    \item Hidden dimension: 256
+    \item Parameters: 3.7M
+\end{itemize}
+
+\textbf{2. GRU (Gated Recurrent Unit):}
+\begin{itemize}
+    \item Bidirectional, 2-layer GRU
+    \item Same dimensions as LSTM
+    \item Parameters: 3.1M (fewer than LSTM due to simpler gating)
+\end{itemize}
+
+\textbf{3. Transformer:}
+\begin{itemize}
+    \item 3 encoder layers, 8 attention heads
+    \item Embedding dimension: 128
+    \item Feed-forward dimension: 512
+    \item Positional encoding for sequence information
+    \item Parameters: 1.9M
+\end{itemize}
+
+% INSERT FIGURE: Model architecture diagram here
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.48\textwidth]{model_architecture.png}
+% \caption{Architecture of the three models: LSTM, GRU, and Transformer.}
+% \label{fig:architecture}
+% \end{figure}
+
+\subsection{Training Procedure}
+
+\textbf{Hyperparameters:}
+\begin{itemize}
+    \item Optimizer: Adam (learning rate=0.001)
+    \item Batch size: 32
+    \item Epochs: 10
+    \item Loss: Binary Cross-Entropy with Logits
+    \item Dropout: 0.3
+    \item Gradient clipping: max norm 5.0
+    \item Learning rate scheduling: ReduceLROnPlateau
+\end{itemize}
+
+Early stopping based on validation AUC. Best model checkpoint saved and used for final evaluation.
+
+\section{Experiments}
+
+\subsection{Dataset Statistics}
+
+% INSERT TABLE: Dataset statistics
+\begin{table}[h]
+\caption{Dataset Statistics}
+\centering
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Value} & \textbf{\%} \\
+\midrule
+Total Samples & 10,000 & 100\% \\
+Glaucoma Positive & 5,048 & 50.5\% \\
+Glaucoma Negative & 4,952 & 49.5\% \\
+\midrule
+White Patients & 7,690 & 76.9\% \\
+Black Patients & 1,491 & 14.9\% \\
+Asian Patients & 819 & 8.2\% \\
+\midrule
+Avg. Note Length (words) & 147 & - \\
+\bottomrule
+\end{tabular}
+\label{tab:dataset_stats}
+\end{table}
+
+\textbf{Important Finding:} Glaucoma prevalence varies significantly by race: Black patients (64.9\%), White patients (47.9\%), Asian patients (48.7\%). This imbalance motivates fairness-focused evaluation.
+
+\subsection{Evaluation Metrics}
+
+\textbf{Overall Performance:}
+\begin{itemize}
+    \item AUC (Area Under ROC Curve)
+    \item Sensitivity (True Positive Rate)
+    \item Specificity (True Negative Rate)
+    \item Accuracy
+\end{itemize}
+
+\textbf{Fairness Metrics:} Same metrics calculated separately for Asian, Black, and White subgroups.
+
+\subsection{Results}
+
+% INSERT TABLE: Overall performance
+\begin{table}[h]
+\caption{Overall Test Set Performance}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{AUC} & \textbf{Sens.} & \textbf{Spec.} & \textbf{Acc.} \\
+\midrule
+LSTM & 0.XXXX & 0.XXXX & 0.XXXX & 0.XXXX \\
+GRU & 0.XXXX & 0.XXXX & 0.XXXX & 0.XXXX \\
+Transformer & 0.XXXX & 0.XXXX & 0.XXXX & 0.XXXX \\
+\bottomrule
+\end{tabular}
+\label{tab:overall_results}
+\end{table}
+
+% INSERT TABLE: Performance by race
+\begin{table*}[h]
+\caption{Performance by Racial Group (Test Set)}
+\centering
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Model} & \textbf{Group} & \textbf{N} & \textbf{AUC} & \textbf{Sensitivity} & \textbf{Specificity} \\
+\midrule
+\multirow{4}{*}{LSTM} & Overall & 2000 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& White & 1537 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& Black & 305 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& Asian & 158 & 0.XXXX & 0.XXXX & 0.XXXX \\
+\midrule
+\multirow{4}{*}{GRU} & Overall & 2000 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& White & 1537 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& Black & 305 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& Asian & 158 & 0.XXXX & 0.XXXX & 0.XXXX \\
+\midrule
+\multirow{4}{*}{Transformer} & Overall & 2000 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& White & 1537 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& Black & 305 & 0.XXXX & 0.XXXX & 0.XXXX \\
+& Asian & 158 & 0.XXXX & 0.XXXX & 0.XXXX \\
+\bottomrule
+\end{tabular}
+\label{tab:fairness_results}
+\end{table*}
+
+% INSERT FIGURE: ROC curves
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.48\textwidth]{roc_curves_by_race.png}
+% \caption{ROC curves for each model, stratified by racial group.}
+% \label{fig:roc_curves}
+% \end{figure}
+
+% INSERT FIGURE: Fairness comparison
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.48\textwidth]{fairness_comparison.png}
+% \caption{AUC, Sensitivity, and Specificity comparison across racial groups.}
+% \label{fig:fairness}
+% \end{figure}
+
+\subsection{Analysis}
+
+\textbf{Best Model:} [Discuss which model performed best overall]
+
+\textbf{Fairness Analysis:} [Discuss performance disparities across racial groups. Are there significant differences? Which group has best/worst performance? Why might this occur?]
+
+\textbf{Sensitivity vs Specificity Trade-off:} [Discuss which is more important for glaucoma detection and how models perform]
+
+\textbf{Model Efficiency:} [Compare training time and model size. Does the Transformer's smaller size lead to better efficiency?]
+
+\section{Conclusions}
+
+\textbf{Summary:} This project successfully implemented three deep learning architectures for glaucoma detection from clinical notes, achieving [X\%] AUC on the test set. Comprehensive fairness evaluation revealed [discuss key fairness findings].
+
+\textbf{Strengths:}
+\begin{itemize}
+    \item Comprehensive fairness evaluation across racial groups
+    \item Multiple baseline comparisons (LSTM, GRU, Transformer)
+    \item Strong performance on imbalanced medical data
+\end{itemize}
+
+\textbf{Limitations:}
+\begin{itemize}
+    \item Relatively small test set for minority groups (158 Asian patients)
+    \item Did not explore pre-trained models (BioBERT, ClinicalBERT)
+    \item Single dataset evaluation (generalization unclear)
+\end{itemize}
+
+\textbf{Future Work:}
+\begin{itemize}
+    \item Fine-tune pre-trained clinical language models
+    \item Ensemble methods combining multiple architectures
+    \item Incorporate multi-modal data (imaging + text)
+    \item Address class imbalance with advanced sampling techniques
+    \item Evaluate on additional datasets for generalization
+\end{itemize}
+
+\textbf{Impact:} This work demonstrates the potential of deep learning for automated glaucoma screening while highlighting the critical importance of fairness evaluation in healthcare AI systems.
+
+\section*{Code Availability}
+
+All code is available at: \url{https://github.com/yourusername/glaucoma-detection}
+
+\begin{thebibliography}{00}
+\bibitem{b1} Author, ``Title,'' Journal, vol. X, no. Y, pp. ZZZ-ZZZ, Year.
+\bibitem{b2} BioBERT citation
+\bibitem{b3} ClinicalBERT citation
+\bibitem{b4} FairCLIP dataset citation
+\bibitem{b5} LSTM for medical text citation
+\bibitem{b6} Transformer for NLP citation
+\bibitem{b7} Fairness in healthcare ML citation
+\bibitem{b8} Glaucoma detection citation
+\end{thebibliography}
+
+\end{document}
