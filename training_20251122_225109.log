@@ -1,0 +1,10 @@
+========================================
+Glaucoma Detection Pipeline
+========================================
+
+[1/3] Running data preprocessing...
+Traceback (most recent call last):
+  File "/home/C00575775/glaucoma-detection-clinical-notes/src/data_preprocessing.py", line 6, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+Error in data preprocessing!

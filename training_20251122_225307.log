@@ -1,0 +1,34 @@
+========================================
+Glaucoma Detection Pipeline
+========================================
+
+[1/3] Running data preprocessing...
+================================================================================
+DATA PREPROCESSING FOR GLAUCOMA DETECTION
+================================================================================
+
+[1] Downloading NLTK resources...
+✓ NLTK resources ready
+
+[2] Loading dataset...
+Traceback (most recent call last):
+  File "/home/C00575775/glaucoma-detection-clinical-notes/src/data_preprocessing.py", line 35, in <module>
+    df = pd.read_csv('../data/raw/clinical_notes.csv')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/bin/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/bin/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 620, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/bin/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1620, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/bin/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1880, in _make_engine
+    self.handles = get_handle(
+                   ^^^^^^^^^^^
+  File "/usr/local/bin/miniconda3/lib/python3.12/site-packages/pandas/io/common.py", line 873, in get_handle
+    handle = open(
+             ^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '../data/raw/clinical_notes.csv'
+Error in data preprocessing!
