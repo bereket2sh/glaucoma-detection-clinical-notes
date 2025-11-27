@@ -79,10 +79,6 @@ cd ..
 - **Stratified by race**: Asian, Black, White subgroups
 - **Fairness analysis**: ROC curves and comparison tables
 
-## 📚 Documentation
-
-See the `docs/` folder for detailed documentation.
-
 ## 🔧 Requirements
 
 - Python 3.8+
